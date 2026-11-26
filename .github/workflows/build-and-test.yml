@@ -5,54 +5,36 @@ on:
     branches: [ master, main ]
   pull_request:
     branches: [ master, main ]
+  # Runs every day at 06:00 UTC (01:00 EST).
+  schedule:
+    - cron: '0 6 * * *'
 
 jobs:
-  build:
+  build-and-test:
     runs-on: windows-latest
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Add MSBuild to PATH
-      uses: microsoft/setup-msbuild@v2
-    
-    - name: Build project (Debug x64)
-      run: |
-        msbuild BlackLawAI.sln /p:Configuration=Debug /p:Platform=x64 2>&1 || echo "Build completed with warnings or errors"
-    
-    - name: Build project (Release x64)
-      run: |
-        msbuild BlackLawAI.sln /p:Configuration=Release /p:Platform=x64 2>&1 || echo "Build completed with warnings or errors"
-    
-    - name: Upload build artifacts (Debug)
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: build-Debug-x64
-        path: x64/Debug/
-        continue-on-error: true
-    
-    - name: Upload build artifacts (Release)
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: build-Release-x64
-        path: x64/Release/
-        continue-on-error: true
 
-  test:
-    runs-on: windows-latest
-    needs: build
-    
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v2
-    
-    - name: Build in Debug mode
+
+    - name: Build project (Debug x64)
       run: msbuild BlackLawAI.sln /p:Configuration=Debug /p:Platform=x64
-    
-    - name: Report test results
-      if: always()
-      run: echo "Build and test workflow completed"
+
+    - name: Write smoke input
+      shell: powershell
+      run: |
+        @("1", "3", "Test Case", "TC-001", "Michigan", "4", "Contract", "Breach of contract claim", "Michigan", "5", "Signed Agreement", "Written contract dated Jan 2025", "2025-01-15", "Client files", "6", "2025-01-15", "Contract signed", "7", "8", "9", "What are my rights?", "0") | Out-File -Encoding ascii smoke-input.txt
+
+    - name: Run smoke test
+      shell: cmd
+      run: |
+        if not exist x64\Debug\BlackLawAI.exe exit /b 1
+        x64\Debug\BlackLawAI.exe < smoke-input.txt > smoke-output.txt 2>&1
+        findstr /C:"BLACKLAWAI9 LEGAL INTELLIGENCE ENGINE" smoke-output.txt >nul || exit /b 1
+        findstr /C:"Case created successfully." smoke-output.txt >nul || exit /b 1
+        findstr /C:"ANALYSIS STATUS: ORGANIZED" smoke-output.txt >nul || exit /b 1
+        findstr /C:"BlackLawAI9 shutting down." smoke-output.txt >nul || exit /b 1
+        type smoke-output.txt
+        echo Test passed: BlackLawAI.exe ran, exited 0, created and analyzed a case, and shut down cleanly.
