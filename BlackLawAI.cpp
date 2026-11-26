@@ -1,159 +1,351 @@
 #include <iostream>
 #include <string>
-#include <unordered_map>
 #include <vector>
-#include <memory>
-#include <cmath>
-#include <random>
-#include <algorithm>
+#include <map>
 #include <sstream>
+#include <algorithm>
 #include <iomanip>
-#include <chrono>
-#include <thread>
-#include <complex>
-#include <array>
+#include <ctime>
+#include <limits>
 
-// ====================== HYPERTENSOR ======================
-template<size_t D>
-class HyperTensor {
-    std::vector<double> data;
-    std::array<size_t, D> dims;
+namespace BlackLawAI9 {
+
+struct LegalIssue {
+    std::string category;
+    std::string description;
+    std::string jurisdiction;
+    std::string status;
+};
+
+struct Evidence {
+    std::string title;
+    std::string description;
+    std::string date;
+    std::string source;
+};
+
+struct CaseEvent {
+    std::string date;
+    std::string event;
+};
+
+struct CaseFile {
+    std::string caseName;
+    std::string jurisdiction;
+    std::string caseNumber;
+    std::vector<LegalIssue> issues;
+    std::vector<Evidence> evidence;
+    std::vector<CaseEvent> timeline;
+};
+
+class BlackLawAI9Engine {
+private:
+    std::string identity = "BlackLawAI9";
+    std::string version = "9.0";
+    std::string jurisdiction = "Michigan / United States";
+    std::vector<CaseFile> cases;
+
+    void line() const {
+        std::cout << "\n----------------------------------------\n";
+    }
 
 public:
-    HyperTensor(std::initializer_list<size_t> dimensions) {
-        size_t total = 1, i = 0;
-        for (auto d : dimensions) {
-            dims[i++] = d;
-            total *= d;
+
+    void initialize() const {
+        line();
+        std::cout << " BLACKLAWAI9 LEGAL INTELLIGENCE ENGINE\n";
+        std::cout << " Version: " << version << "\n";
+        std::cout << " Jurisdiction: " << jurisdiction << "\n";
+        std::cout << " Status: ONLINE\n";
+        std::cout << "----------------------------------------\n";
+
+        std::cout << "\nBlackLawAI9: ";
+        std::cout << "Knowledge. Analysis. Accountability.\n";
+        std::cout << "How may I assist you today?\n";
+    }
+
+    void introduce() const {
+        std::cout
+            << "\nI am BlackLawAI9, an independent "
+            << "legal information and case-analysis engine.\n"
+            << "My purpose is to organize information, "
+            << "identify legal questions, and support "
+            << "informed decision-making.\n";
+    }
+
+    void setJurisdiction() {
+        std::cout << "\nEnter jurisdiction: ";
+        std::getline(std::cin, jurisdiction);
+
+        std::cout << "Jurisdiction updated to: "
+                  << jurisdiction << "\n";
+    }
+
+    void createCase() {
+        CaseFile file;
+
+        std::cout << "\nCASE NAME: ";
+        std::getline(std::cin, file.caseName);
+
+        std::cout << "CASE NUMBER: ";
+        std::getline(std::cin, file.caseNumber);
+
+        std::cout << "JURISDICTION: ";
+        std::getline(std::cin, file.jurisdiction);
+
+        cases.push_back(file);
+
+        std::cout << "\nCase created successfully.\n";
+    }
+
+    void addIssue() {
+        if (cases.empty()) {
+            std::cout << "Create a case first.\n";
+            return;
         }
-        data.resize(total, 0.0);
+
+        LegalIssue issue;
+
+        std::cout << "\nLEGAL ISSUE CATEGORY: ";
+        std::getline(std::cin, issue.category);
+
+        std::cout << "DESCRIPTION: ";
+        std::getline(std::cin, issue.description);
+
+        std::cout << "JURISDICTION: ";
+        std::getline(std::cin, issue.jurisdiction);
+
+        issue.status = "Under Review";
+
+        cases.back().issues.push_back(issue);
+
+        std::cout << "Legal issue added.\n";
     }
 
-    double& operator()(std::initializer_list<size_t> indices) {
-        size_t idx = 0, multiplier = 1, i = 0;
-        for (auto it = indices.begin(); it != indices.end(); ++it, ++i) {
-            idx += (*it) * multiplier;
-            multiplier *= dims[i];
+    void addEvidence() {
+        if (cases.empty()) {
+            std::cout << "Create a case first.\n";
+            return;
         }
-        return data[idx];
+
+        Evidence item;
+
+        std::cout << "\nEVIDENCE TITLE: ";
+        std::getline(std::cin, item.title);
+
+        std::cout << "DESCRIPTION: ";
+        std::getline(std::cin, item.description);
+
+        std::cout << "DATE: ";
+        std::getline(std::cin, item.date);
+
+        std::cout << "SOURCE: ";
+        std::getline(std::cin, item.source);
+
+        cases.back().evidence.push_back(item);
+
+        std::cout << "Evidence recorded.\n";
     }
 
-    void superposition(const HyperTensor& other, double alpha = 0.5) {
-        for (size_t i = 0; i < data.size(); ++i)
-            data[i] = alpha * data[i] + (1 - alpha) * other.data[i];
+    void addTimelineEvent() {
+        if (cases.empty()) {
+            std::cout << "Create a case first.\n";
+            return;
+        }
+
+        CaseEvent event;
+
+        std::cout << "\nEVENT DATE: ";
+        std::getline(std::cin, event.date);
+
+        std::cout << "EVENT DESCRIPTION: ";
+        std::getline(std::cin, event.event);
+
+        cases.back().timeline.push_back(event);
+
+        std::cout << "Timeline event recorded.\n";
     }
 
-    double magnitude() const {
-        double sum = 0;
-        for (auto v : data) sum += v * v;
-        return std::sqrt(sum);
+    void analyzeCase() const {
+        if (cases.empty()) {
+            std::cout << "No cases available.\n";
+            return;
+        }
+
+        const CaseFile& file = cases.back();
+
+        line();
+
+        std::cout << "BLACKLAWAI9 CASE ANALYSIS\n";
+        std::cout << "Case: " << file.caseName << "\n";
+        std::cout << "Number: " << file.caseNumber << "\n";
+        std::cout << "Jurisdiction: "
+                  << file.jurisdiction << "\n";
+
+        std::cout << "\nLEGAL ISSUES: "
+                  << file.issues.size() << "\n";
+
+        for (const auto& issue : file.issues) {
+            std::cout << "\n- " << issue.category
+                      << "\n  " << issue.description
+                      << "\n  Status: " << issue.status
+                      << "\n";
+        }
+
+        std::cout << "\nEVIDENCE ITEMS: "
+                  << file.evidence.size() << "\n";
+
+        for (const auto& item : file.evidence) {
+            std::cout << "- " << item.title
+                      << " | " << item.date << "\n";
+        }
+
+        std::cout << "\nTIMELINE EVENTS: "
+                  << file.timeline.size() << "\n";
+
+        for (const auto& event : file.timeline) {
+            std::cout << "- " << event.date
+                      << ": " << event.event << "\n";
+        }
+
+        line();
+
+        std::cout
+            << "ANALYSIS STATUS: ORGANIZED\n"
+            << "LEGAL CONCLUSIONS: NOT ESTABLISHED\n"
+            << "ATTORNEY REVIEW: RECOMMENDED\n";
+    }
+
+    void legalFramework() const {
+        line();
+
+        std::cout << "LEGAL RESEARCH FRAMEWORK\n";
+
+        std::cout
+            << "1. Identify the legal question.\n"
+            << "2. Identify the applicable jurisdiction.\n"
+            << "3. Locate relevant statutes.\n"
+            << "4. Locate relevant court decisions.\n"
+            << "5. Compare facts against legal elements.\n"
+            << "6. Identify supporting evidence.\n"
+            << "7. Identify contrary evidence.\n"
+            << "8. Record uncertainties and missing facts.\n"
+            << "9. Prepare findings for human review.\n";
+
+        line();
+    }
+
+    void assistant() const {
+        std::string question;
+
+        std::cout << "\nYOU: ";
+        std::getline(std::cin, question);
+
+        std::cout << "\nBLACKLAWAI9: ";
+
+        if (question.empty()) {
+            std::cout << "Please enter a question.\n";
+            return;
+        }
+
+        std::string lower = question;
+
+        std::transform(
+            lower.begin(),
+            lower.end(),
+            lower.begin(),
+            [](unsigned char c) {
+                return static_cast<char>(std::tolower(c));
+            }
+        );
+
+        if (lower.find("rights") != std::string::npos) {
+            std::cout
+                << "Let's identify the applicable rights, "
+                << "jurisdiction, relevant facts, and "
+                << "potential legal protections.\n";
+        }
+        else if (lower.find("evidence") != std::string::npos) {
+            std::cout
+                << "Evidence should be documented with "
+                << "its source, date, authenticity, and "
+                << "relationship to the legal issue.\n";
+        }
+        else if (lower.find("case") != std::string::npos) {
+            std::cout
+                << "We can organize the case into facts, "
+                << "issues, applicable law, evidence, "
+                << "and possible arguments.\n";
+        }
+        else {
+            std::cout
+                << "Your question has been received. "
+                << "A full legal assessment requires "
+                << "applicable legal sources and facts.\n";
+        }
+
+        std::cout
+            << "This is legal information, not a "
+            << "verified legal opinion.\n";
+    }
+
+    void showMenu() const {
+        line();
+
+        std::cout
+            << "1. Introduce BlackLawAI9\n"
+            << "2. Change jurisdiction\n"
+            << "3. Create case file\n"
+            << "4. Add legal issue\n"
+            << "5. Add evidence\n"
+            << "6. Add timeline event\n"
+            << "7. Analyze latest case\n"
+            << "8. Legal research framework\n"
+            << "9. Ask BlackLawAI9\n"
+            << "0. Exit\n";
+
+        line();
+    }
+
+    void run() {
+        initialize();
+
+        bool running = true;
+
+        while (running) {
+            showMenu();
+
+            std::cout << "SELECT: ";
+
+            std::string choice;
+            std::getline(std::cin, choice);
+
+            if (choice == "1") introduce();
+            else if (choice == "2") setJurisdiction();
+            else if (choice == "3") createCase();
+            else if (choice == "4") addIssue();
+            else if (choice == "5") addEvidence();
+            else if (choice == "6") addTimelineEvent();
+            else if (choice == "7") analyzeCase();
+            else if (choice == "8") legalFramework();
+            else if (choice == "9") assistant();
+            else if (choice == "0") {
+                std::cout
+                    << "\nBlackLawAI9 shutting down.\n";
+                running = false;
+            }
+            else {
+                std::cout << "Invalid selection.\n";
+            }
+        }
     }
 };
 
-// ====================== CONCEPT EMBEDDING ======================
-struct ConceptEmbedding7D {
-    HyperTensor<3> semantic{ 100,50,20 };
-    HyperTensor<4> temporal{ 100,50,20,10 };
-    HyperTensor<5> relational{ 100,50,20,10,15 };
-    HyperTensor<6> jurisdictional{ 100,50,20,10,15,8 };
-    HyperTensor<7> predictive{ 100,50,20,10,15,8,5 };
+} // namespace BlackLawAI9
 
-    std::string concept_name;
-    std::string base_definition;
-
-    double similarity(const ConceptEmbedding7D& other) {
-        return 0.3 * 0.95 + 0.25 * 0.87 + 0.2 * 0.92 + 0.15 * 0.78 + 0.1 * 0.83;
-    }
-};
-
-// ====================== ATTENTION LAYER ======================
-class AttentionLayer {
-public:
-    std::vector<double> compute_attention(
-        const std::vector<double>& input,
-        const std::vector<std::vector<double>>& memory_banks
-    ) {
-        std::vector<double> output(input.size(), 0.0);
-        return output;
-    }
-};
-
-// ====================== GRAPH NEURAL NETWORK ======================
-class GraphNeuralLayer {
-    struct Node {
-        std::string id;
-        std::vector<double> features;
-        std::vector<std::pair<std::string, double>> edges;
-    };
-    std::unordered_map<std::string, Node> concept_graph;
-
-public:
-    void add_concept(const std::string& id, const std::vector<double>& features) {
-        concept_graph[id] = { id, features, {} };
-    }
-
-    void add_relation(const std::string& from, const std::string& to, double weight) {
-        if (concept_graph.count(from)) concept_graph[from].edges.push_back({ to, weight });
-    }
-
-    std::vector<double> message_passing(const std::string& start_node, int hops = 3) {
-        if (!concept_graph.count(start_node)) return {};
-        return concept_graph[start_node].features;
-    }
-};
-
-// ====================== TEMPORAL CONVOLUTION ======================
-class TemporalConvolutionLayer {
-public:
-    std::vector<double> temporal_convolve(
-        const std::vector<std::vector<double>>& time_series,
-        const std::vector<double>& kernel
-    ) {
-        return {};
-    }
-};
-
-// ====================== SUPERPOSITION MEMORY ======================
-class SuperpositionMemory {
-    struct MemoryState {
-        std::vector<std::complex<double>> amplitudes;
-        std::string label;
-        double coherence;
-    };
-    std::vector<MemoryState> memory_states;
-
-public:
-    void encode(const std::vector<double>& pattern, const std::string& label) {
-        MemoryState state;
-        state.label = label;
-        state.coherence = 1.0;
-        for (double p : pattern)
-            state.amplitudes.push_back(std::polar(std::sqrt(std::abs(p)), 0.0));
-        memory_states.push_back(state);
-    }
-
-    std::vector<std::pair<std::string, double>> query(const std::vector<double>& pattern) {
-        std::vector<std::pair<std::string, double>> results;
-        for (auto& s : memory_states) results.push_back({ s.label, s.coherence });
-        return results;
-    }
-};
-
-// ====================== MAIN ======================
 int main() {
-    std::cout << "=== BlackLawAI v1.0 ===\n";
-
-    // Example usage
-    ConceptEmbedding7D legal_concept;
-    legal_concept.concept_name = "DueProcess";
-
-    SuperpositionMemory memory;
-    memory.encode({ 1.0,2.0,3.0 }, legal_concept.concept_name);
-
-    auto results = memory.query({ 1.0,2.0,3.0 });
-    for (auto& [label, coherence] : results) {
-        std::cout << "Label: " << label << " | Coherence: " << coherence << "\n";
-    }
+    BlackLawAI9::BlackLawAI9Engine engine;
+    engine.run();
 
     return 0;
 }
